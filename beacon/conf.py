@@ -78,6 +78,13 @@ beacon_handovers ={
     }
 
 #
+# CORS hosts
+#
+cors_hosts = [
+    "https://beacon-network-test.ega-archive.org",
+]
+
+#
 # Database connection
 #
 database_host = 'mongo'#'host.docker.internal'
