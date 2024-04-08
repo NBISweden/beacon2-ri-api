@@ -409,14 +409,10 @@ def merge_terms():
         client.beacon.filtering_terms.delete_many({"id": repeated_id})
     if new_terms != []:
         client.beacon.filtering_terms.insert_many(new_terms)
-        
-    
-    
-    
 
-
-
-
+    if len(new_terms) != 0:
+        print('inserting new terms')
+        client.beacon.filtering_terms.insert_many(new_terms)
 
 insert_all_ontology_terms_used()
 merge_terms()
