@@ -114,13 +114,15 @@ def main(path=None):
     # Configure HTTPS (or not)
     ssl_context = None
     if getattr(conf, "beacon_tls_enabled", False):
+        LOG.debug("enabling TLS")
         use_as_client = getattr(conf, "beacon_tls_client", False)
-        sslcontext = ssl.create_default_context(
+        ssl_context = ssl.create_default_context(
             ssl.Purpose.CLIENT_AUTH if use_as_client else ssl.Purpose.SERVER_AUTH
         )
-        sslcontext.load_cert_chain(conf.beacon_cert, conf.beacon_key)  # should exist
-        sslcontext.check_hostname = False
-        # TODO: add the CA chain
+        ssl_context.load_cert_chain(conf.beacon_cert, conf.beacon_key)  # should exist
+        ssl_context.check_hostname = False
+        if conf.CA_cert:
+            ssl_context.cafile=conf.CA_cert
 
     # Load ontologies
     #LOG.info("Loading ontologies... (this might take a while)")
