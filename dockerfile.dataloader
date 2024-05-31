@@ -1,0 +1,13 @@
+FROM python:3.11-slim-bookworm
+
+ADD https://fastdl.mongodb.org/tools/db/mongodb-database-tools-debian12-x86_64-100.9.4.deb /tmp/mongodb-database-tools-debian12-x86_64-100.9.4.deb
+RUN dpkg -i /tmp/mongodb-database-tools-debian12-x86_64-100.9.4.deb && rm /tmp/mongodb-database-tools-debian12-x86_64-100.9.4.deb && \
+    pip install --no-cache-dir pymongo owlready2 obonet progressbar tqdm && \
+    apt-get update && apt-get install -y jq && rm -rf /var/lib/apt/lists/
+
+COPY beacon/check.py beacon/check_mongo.py
+COPY beacon/reindex.py beacon/reindex.py
+COPY beacon/db/extract_filtering_terms.py /beacon/extract_filtering_terms.py
+COPY beacon/db/get_descendants.py beacon/get_descendants.py
+
+ENTRYPOINT ["/bin/bash"]

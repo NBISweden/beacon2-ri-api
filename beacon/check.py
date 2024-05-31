@@ -1,5 +1,6 @@
 from pymongo.mongo_client import MongoClient
-from beacon import conf
+from pymongo.errors import ConnectionFailure 
+import conf
 
 
 uri = "mongodb://{}:{}@{}:{}/{}?authSource={}".format(
@@ -16,4 +17,8 @@ if conf.database_certificate:
     if conf.database_cafile:
         uri += '&tlsCAFile={}'.format(conf.database_cafile)
 
-client = MongoClient(uri)
+client = MongoClient(uri, serverSelectionTimeoutMS=600000)
+try:
+    client.admin.command('ping')
+except ConnectionFailure as err:
+    print(f"Database error encountered: {err}")

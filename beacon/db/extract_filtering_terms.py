@@ -28,17 +28,21 @@ ONTOLOGY_REGEX = re.compile(r"([_A-Za-z0-9]+):([_A-Za-z0-9^\-]+)")
 ICD_REGEX = re.compile(r"(ICD[_A-Za-z0-9]+):([_A-Za-z0-9^\./-]+)")
 
 
-client = MongoClient(
-        #"mongodb://127.0.0.1:27017/"
-        "mongodb://{}:{}@{}:{}/{}?authSource={}".format(
-            conf.database_user,
-            conf.database_password,
-            conf.database_host,
-            conf.database_port,
-            conf.database_name,
-            conf.database_auth_source,
-        )
-    )
+uri = "mongodb://{}:{}@{}:{}/{}?authSource={}".format(
+    conf.database_user,
+    conf.database_password,
+    conf.database_host,
+    conf.database_port,
+    conf.database_name,
+    conf.database_auth_source
+)
+
+if conf.database_certificate:
+    uri += '&tls=true&tlsCertificateKeyFile={}'.format(conf.database_certificate)
+    if conf.database_cafile:
+        uri += '&tlsCAFile={}'.format(conf.database_cafile)
+
+client = MongoClient(uri)
 
 '''
 client = MongoClient(
@@ -382,15 +386,10 @@ def merge_terms():
                 'scopes': array_of_scopes        
                         })
         client.beacon.filtering_terms.delete_many({"id": repeated_id})
-    client.beacon.filtering_terms.insert_many(new_terms)
-        
-    
-    
-    
 
-
-
-
+    if len(new_terms) != 0:
+        print('inserting new terms')
+        client.beacon.filtering_terms.insert_many(new_terms)
 
 insert_all_ontology_terms_used()
 merge_terms()
